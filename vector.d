@@ -1,3 +1,41 @@
+import std.conv;
+struct Vector{
+    long x, y;
+    Argument arg;
+    long square;
+    real length;
+    this(long x, long y){
+        this.x = x, this.y = y;
+        if(x != 0 || y != 0) arg = Argument(x, y);
+        square = x * x + y * y;
+        length = square.to!real.sqrt;
+    }
+    bool opEquals(Vector v){
+        return x == v.x && y == v.y;
+    }
+	Vector opUnary(string s)(){
+		if(s == "+") return Vector(x, y);
+		if(s == "-") return Vector(-x, -y);
+		assert(0, "Operator unary " ~ s ~ " not implemented");
+	}
+	Vector opBinary(string s)(Vector v){
+		if(s == "+") return Vector(x + v.x, y + v.y);
+		if(s == "-") return Vector(x - v.x, y - v.y);
+		assert(0, "Operator " ~ s ~ " not implemented");
+	}
+    Vector opBinary(string s)(long k){
+        if(s == "*") return Vector(x * k, y * k);
+		assert(0, "Operator " ~ s ~ " not implemented");
+    }
+    Vector opBinaryRight(string s)(long k){
+        if(s == "*") return Vector(k * x, k * y);
+		assert(0, "Operator " ~ s ~ " not implemented");
+    }
+
+    int quadrant(){ return arg.quadrant; }
+    bool isLeftTo(Vector v){ return arg.isLeftTo(v.arg); }
+    bool follows(Vector v){ return arg.follows(v.arg); }
+}
 struct Argument{
     long x, y;
     this(long x, long y){
@@ -6,9 +44,9 @@ struct Argument{
     }
     
     bool opEquals(Argument a){
-        return y * a.x == x * a.y;
+        return quadrant == a.quadrant && y * a.x == x * a.y;
     }
-	Argument opUnary(string s){
+	Argument opUnary(string s)(){
 		if(s == "+") return Argument(x, y);
 		if(s == "-") return Argument(-x, -y);
 		assert(0, "Operator unary " ~ s ~ " not implemented");
