@@ -5,6 +5,9 @@ struct Argument{
         this.x = x, this.y = y;
     }
     
+    bool opEquals(Argument a){
+        return y * a.x == x * a.y;
+    }
 	Argument opUnary(string s){
 		if(s == "+") return Argument(x, y);
 		if(s == "-") return Argument(-x, -y);
