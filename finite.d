@@ -60,6 +60,21 @@ struct Finite{
 
 // ---以下はユーティリティ--- //
 
+/// mod p における累乗
+/// 例 power(5, 3) = Finite(125)
+/// オーダーは a ** b を計算する場合 O(log b)
+Finite power(long a, long b){
+	Finite m = Finite(a);
+	Finite ans = Finite(1);
+	while(b > 0){
+		if(b % 2) ans += m;
+		m *= m;
+		b /= 2;
+	}
+	return ans;
+}
+Finite power(Finite a, long b){ return power(a.value, b); }
+
 /// mod p における階乗
 /// 例 perm(6) = Finite(120)
 /// オーダーはプログラム全体で出てくる最大の引数Nに対してO(N)
