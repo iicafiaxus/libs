@@ -33,12 +33,16 @@ class Stack(T){
 	private T[] xs;
 	private uint j; // j : 次に書き込む位置
 	this(){	}
-	this(T[] xs){ this.xs = xs; j = xs.length.to!uint}
+	this(T[] xs){ this.xs = xs; j = xs.length.to!uint; }
 	uint length(){ return j; }
 	bool isEmpty(){ return j == 0; }
 	void push(T x){
 		while(j + 1 >= xs.length) xs.length = xs.length * 2 + 1;
 		xs[j ++] = x;
+	}
+	Stack opOpAssign(string op)(T x){
+		if(op == "~"){ push(x); return this; }
+		assert(0, "Operator " ~ op ~ "= not implemented");
 	}
 	T pop(){ assert(j > 0); return xs[-- j]; }
 	T peek(){ assert(j > 0); return xs[j - 1]; }
