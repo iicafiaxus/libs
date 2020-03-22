@@ -1,4 +1,4 @@
-import std.conv;
+import std.conv, std.math;
 struct Vector{
     long x, y;
     Argument arg;
@@ -35,6 +35,7 @@ struct Vector{
     int quadrant(){ return arg.quadrant; }
     bool isLeftTo(Vector v){ return arg.isLeftTo(v.arg); }
     bool follows(Vector v){ return arg.follows(v.arg); }
+    real angle(){ return arg.angle; }
     string toString(){ return "(" ~ x.to!string ~ ", " ~ y.to!string ~ ")"; }
 }
 struct Argument{
@@ -79,9 +80,16 @@ struct Argument{
         if(q != aq) return q < aq;
         else return a.isLeftTo(this);
     }
+
+    // 角度 (0 ≦ θ ＜ 2π)
+    real angle(){
+        real ans = atan2(y.to!real, x.to!real);
+        if(ans < 0) return ans + PI + PI;
+        else return ans;
+    }
+
     string toString(){ return "(" ~ x.to!string ~ ", " ~ y.to!string ~ ")"; }
 }
-
 // ---------- 以下テスト ---------- //
 // https://judge.yosupo.jp/problem/sort_points_by_argument
 
