@@ -35,6 +35,7 @@ struct Vector{
     int quadrant(){ return arg.quadrant; }
     bool isLeftTo(Vector v){ return arg.isLeftTo(v.arg); }
     bool follows(Vector v){ return arg.follows(v.arg); }
+    string toString(){ return "(" ~ x.to!string ~ ", " ~ y.to!string ~ ")"; }
 }
 struct Argument{
     long x, y;
@@ -78,6 +79,7 @@ struct Argument{
         if(q != aq) return q < aq;
         else return a.isLeftTo(this);
     }
+    string toString(){ return "(" ~ x.to!string ~ ", " ~ y.to!string ~ ")"; }
 }
 
 // ---------- 以下テスト ---------- //
