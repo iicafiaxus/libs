@@ -55,6 +55,18 @@ long[] primeDivisors(long a){
 	return [];
 }
 
+
+// n を b 進法で表したときの桁和
+long digitSum(long n, long b){
+	assert(b >= 2);
+	long ans;
+	while(n > 0){
+		ans += n % b;
+		n /= b;
+	}
+	return ans;
+}
+
 // テストコード
 import std.stdio;
 void main(){
