@@ -67,7 +67,7 @@ Finite power(long a, long b){
 	Finite m = Finite(a);
 	Finite ans = Finite(1);
 	while(b > 0){
-		if(b % 2) ans = m;
+		if(b % 2) ans *= m;
 		m *= m;
 		b /= 2;
 	}
