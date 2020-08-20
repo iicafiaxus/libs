@@ -1,8 +1,9 @@
 // 素数位数有限体
 // 負の数を与えても大丈夫（Finite(-1) などは Finite(mod - 1) の意味になる）
 import std.conv;
+const long mod = 1_000_000_007;
 struct Finite{
-	long value; static long mod = 1_000_000_007;
+	long value;
 	this(long v){ value = val(v); }
 	static long val(long v){ return (v + mod  - (v / mod) * mod) % mod; }
 	bool opCast(T: bool)(){ return value != 0; }
