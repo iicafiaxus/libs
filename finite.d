@@ -99,9 +99,20 @@ Finite invperm(long x){ int i = Finite.val(x).to!int;
 /// mod p における二項係数（定義に注意：(a + b)! / a! / b! ）
 /// 例 pascal(3, 2) = Finite(10)
 /// ただし、「a < 0 または b < 0」のとき答えは 0 を返します。
+/// オーダーはプログラム全体で出てくる最大のa、bに対してO(a + b)、都度はO(1)
 Finite pascal(long a, long b){
 	if(a < 0 || b < 0) return Finite(0);
 	return perm(a + b) * invperm(a) * invperm(b);
+}
+
+/// mod p における組合せ（定義に注意：n(n - 1)(n - 2) ... (n - r + 1) / r(r - 1)(r - 2) ... 1 ）
+/// 例 comb(5, 2) = Finite(10)
+/// オーダーは都度O(r)
+Finite comb(long n, long r){
+    if(r < 0 || n < r) return Finite(0);
+    long ans = invperm(r).value;
+    foreach(i; 0 .. r) ans *= n - i, ans %= mod;
+    return Finite(ans);
 }
 
 
