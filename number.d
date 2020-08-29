@@ -67,6 +67,7 @@ class Factorizer{
     // 素因数分解（重複度に応じる 例：f(12) = [2, 2, 3]）
     // 小さい順に並べる
     long[] opCall(long a){
+        assert(a < ds.length);	    
         long[] res;
         while(a > 1) res ~= ds[a], a /= ds[a];
         return res;
@@ -75,6 +76,7 @@ class Factorizer{
     // 素数の約数の列挙（重複度は無視 例：f(12, 0) = [2, 3]）
     // 小さい順に並べる
     long[] opCall(long a, bool canDuplicate){
+        assert(a < ds.length);	    
         if(canDuplicate) return opCall(a);
         long[] res;
         while(a > 1){
