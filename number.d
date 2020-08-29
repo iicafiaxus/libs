@@ -50,9 +50,40 @@ long[] primesTo(long a){
 	return res;
 }
 
-// 素数である約数の集合
-long[] primeDivisors(long a){
-	return [];
+// n 以下の自然数を素因数分解する
+// 準備に O(m^2) ただし m は素数の個数（=O(log n) ）
+// 1回の実行に O(log a) ただし a は引数
+class Factorizer{
+    long[] ds; // ds[i]: i を割り切る最小の素数
+    this(long n){
+        ds = new long[](n + 1);
+        foreach(i; 0 .. n + 1) ds[i] = i;
+        foreach(i; 2 .. n + 1){
+            if(ds[i] < i) continue;
+            for(long u = i * 2; u <= n; u += i) if(ds[u] > i) ds[u] = i;
+        }
+    }
+
+    // 素因数分解（重複度に応じる 例：f(12) = [2, 2, 3]）
+    // 小さい順に並べる
+    long[] opCall(long a){
+        long[] res;
+        while(a > 1) res ~= ds[a], a /= ds[a];
+        return res;
+    }
+
+    // 素数の約数の列挙（重複度は無視 例：f(12, 0) = [2, 3]）
+    // 小さい順に並べる
+    long[] opCall(long a, bool canDuplicate){
+        if(canDuplicate) return opCall(a);
+        long[] res;
+        while(a > 1){
+            if(res.length == 0 || res[$ - 1] < ds[a]) res ~= ds[a];
+            a /= ds[a];
+        }
+        return res;
+    }
+
 }
 
 
