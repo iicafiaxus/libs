@@ -21,6 +21,29 @@ long lcm(long a, long b){
 	return (a / gcd(a, b) * b);
 }
 
+// 拡張ユークリッドアルゴリズム
+// ax - by = 1 をみたす最小の正の整数の組 (x, y) の x
+// （制約: a と b は正で、互いに素）
+long exeuclid(long a, long b){
+  assert(a > 0 && b > 0);
+  // assert(gcd(a, b) == 1);
+
+  long[3] u = [a, 1, 0], v = [b, 0, 1];
+  
+  while(v[0] > 0){
+    long q = u[0] / v[0];
+    long[3] w = u[] - v[] * q;
+    u = v;
+    v = w;
+  } // 絶対値最小の解が (x, y) = (u[1], -u[2]) である
+  
+  long ans = u[1];
+  if(ans <= 0) ans += b;
+  if(a * ans == 1) ans += b;
+  
+  return ans;
+}
+
 /// 約数の集合
 /// 1とその数自身も含む、正の約数の集合。
 /// 例 divisors(48) = [1, 2, 3, 4, 6, 8, 12, 16, 24, 48]
@@ -51,7 +74,7 @@ long[] primesTo(long a){
 }
 
 // n 以下の自然数を素因数分解する
-// 準備に O(m^2) ただし m は素数の個数（=O(log n) ）
+// 準備に O(mn) ただし m は素数の個数（=O(log n) ）
 // 1回の実行に O(log a) ただし a は引数
 class Factorizer{
     long[] ds; // ds[i]: i を割り切る最小の素数
@@ -87,6 +110,58 @@ class Factorizer{
     }
 
 }
+
+
+// 素因数分解（同じ素因数の積はまとめる）
+// 都度 O(√n)
+// 例: 300 -> [4, 3, 25]
+long[] primepowerfactors(long n){
+  long u = n;
+  long[] ds;
+  for(long p = 2; p * p <= n; p ++){
+    if(u % p) continue;
+    ds ~= 1;
+    while(u % p == 0){
+      ds[$ - 1] *= p;
+      u /= p;
+    }
+  }
+  if(u > 1) ds ~= u;
+  return ds;
+}
+
+// 素因数分解（同じ素因数は1回だけ）
+// 都度 O(√n)
+// 例: 300 -> [2, 3, 5]
+long[] primefactors(long n){
+  long u = n;
+  long[] ds;
+  for(long p = 2; p * p <= n; p ++){
+    if(u % p) continue;
+    ds ~= p;
+    while(u % p == 0) u /= p;
+  }
+  if(u > 1) ds ~= u;
+  return ds;
+}
+
+// 素因数分解（同じ素因数も重複度だけくり返す）
+// 都度 O(√n)
+// 例: 300 -> [2, 2, 3, 5, 5]
+long[] factors(long n){
+  long u = n;
+  long[] ds;
+  for(long p = 2; p * p <= n; p ++){
+    if(u % p) continue;
+    while(u % p == 0){
+      ds ~= p;
+      u /= p;
+    }
+  }
+  if(u > 1) ds ~= u;
+  return ds;
+}
+
 
 
 // n を b 進法で表したときの桁和
