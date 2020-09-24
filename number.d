@@ -24,6 +24,7 @@ long lcm(long a, long b){
 // 拡張ユークリッドアルゴリズム
 // ax - by = 1 をみたす最小の正の整数の組 (x, y) の x
 // （制約: a と b は正で、互いに素）
+// ※「ax = 1 (mod b) なる最小の正の整数x」ではないので注意（a = 1のとき挙動が異なる）
 long exeuclid(long a, long b){
   assert(a > 0 && b > 0);
   // assert(gcd(a, b) == 1);
