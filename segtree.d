@@ -5,8 +5,8 @@
 
 引数
 a, b　添字の範囲。 この意味はa から b - 1 までなので注意。
-marge　左の子と右の子から自分の値をきめる関数（たとえばmax）
-neutral　すべての x に対して marge(x, z) = x をみたすz（たとえば-infty）
+merge　左の子と右の子から自分の値をきめる関数（たとえばmax）
+neutral　すべての x に対して merge(x, z) = x をみたすz（たとえば-infty）
 
 */
 class SegTree(T){
@@ -16,18 +16,18 @@ class SegTree(T){
 	bool hasValue;
 	bool isTerminal;
 	int a, b; // a <= x < b を担当する
-	T delegate(T, T) marge;
-	this(int a, int b, T delegate(T, T) marge, T neutral = T.init){
+	T delegate(T, T) merge;
+	this(int a, int b, T delegate(T, T) merge, T neutral = T.init){
 		this.a = a, this.b = b;
-		this.marge = marge;
+		this.merge = merge;
 		this.neutral = neutral;
 		if(b - a == 1){
 			this.isTerminal = 1;
 		}
 		else{
 			int c = (a + b) / 2;
-			this.left = new SegTree(a, c, marge, neutral);
-			this.right = new SegTree(c, b, marge, neutral);
+			this.left = new SegTree(a, c, merge, neutral);
+			this.right = new SegTree(c, b, merge, neutral);
 		}
 	}
 	
@@ -37,7 +37,7 @@ class SegTree(T){
 		if(a <= this.a && this.b <= b){
 			if(! this.hasValue){
 				T v1 = this.left.getValue(a, b), v2 = this.right.getValue(a, b);
-				T v = marge(v1, v2);
+				T v = merge(v1, v2);
 				this.value = v;
 				this.hasValue = 1;
 			}
@@ -45,7 +45,7 @@ class SegTree(T){
 		}
 		else{
 			T v1 = this.left.getValue(a, b), v2 = this.right.getValue(a, b);
-			T v = marge(v1, v2);
+			T v = merge(v1, v2);
 			return v;
 		}
 	}
@@ -54,7 +54,7 @@ class SegTree(T){
 	// i における値を設定
 	void setValue(int i, T value){
 		assert(a <= i && i < b);
-		this.hasValue = 0; // これが漏れていた！！
+		this.hasValue = 0;
 		if(this.isTerminal){
 			this.hasValue = 1;
 			this.value = value;
