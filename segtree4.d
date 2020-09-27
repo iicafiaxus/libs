@@ -6,13 +6,13 @@
     
     初期化
     auto seg = new SegTree!(long, 
-            (long v1, long v2) => v1 + v2,
+            delegate (long v1, long v2) => v1 + v2,
                 // 値 v1 をセットした場所に値 v2 をセットしたら、結局どんな値をセットしたことになるか
                 // 加算する場合なら v1 + v2、上書きする場合なら v2 など
-            (long x, int wx, long v) => x + v * wx,
+            delegate (long x, int wx, long v) => x + v * wx,
                 // 計算結果が x である幅 wx の区間に、値 v をセットしたら、計算結果はどうなるか
                 // 幅とは、たとえば (i, i + 1) なら幅 1 （(i, i + 1) は 1 マスだけからなる区間）
-            (long x, int wx, long y, int wy) => x + y,
+            delegate (long x, int wx, long y, int wy) => x + y,
                 // 計算結果が x である幅 wx の区間と、計算結果が y である幅 wy の区間をつなげたら
                 // 合わせた区間の計算結果はどうなるか（x が左、y が右）
             0
@@ -31,9 +31,9 @@
 
     コピペ用
     auto seg = new SegTree!(long, 
-            (long v1, long v2) => v1 + v2,
-            (long x, int wx, long v) => x + v * wx,
-            (long x, int wx, long y, int wy) => x + y,
+            delegate (long v1, long v2) => v1 + v2,
+            delegate (long x, int wx, long v) => x + v * wx,
+            delegate (long x, int wx, long y, int wy) => x + y,
             0
     )(0, n);
 
