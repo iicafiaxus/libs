@@ -19,6 +19,12 @@
       delegate (long x, int wx, long y, int wy) => x + y,
         // 計算結果が x である幅 wx の区間と、計算結果が y である幅 wy の区間をつなげたら
         // 合わせてできる幅 (wx + wy) の区間の計算結果はどうなるか（x が左、y が右）
+      delegate (long v, int wx, int wy) => v,
+        // 幅 wx の区間と幅 wy の区間を合わせてできた幅 (wx + wy) の区間に値 v をセットすることは
+        // そのうちの左側の幅 wx の区間にとってはどんな値をセットしたことになるか
+      delegate (long v, int wx, int wy) => v,
+        // 幅 wx の区間と幅 wy の区間を合わせてできた幅 (wx + wy) の区間に値 v をセットすることは
+        // そのうちの右側の幅 wy の区間にとってはどんな値をセットしたことになるか
       0
         // 初期値 (=開始直後に1マスだけ読み取ったら何という計算結果になるか)
     )(0, n);
@@ -38,6 +44,8 @@
       delegate (long v1, long v2) => v1 + v2,
       delegate (long x, int wx, long v) => x + v * wx,
       delegate (long x, int wx, long y, int wy) => x + y,
+      delegate (long v, int wx, int wy) => v,
+      delegate (long v, int wx, int wy) => v,
       0
     )(0, n);
 */
@@ -46,6 +54,8 @@ class SegTree(
 	U delegate(U, U) update,
 	T delegate(T, int, U) apply,
 	T delegate(T, int, T, int) merge,
+	U delegate(U, int, int) projectleft,
+	U delegate(U, int, int) projectright,
 	T initial
 ){
 	int a, b;
@@ -81,8 +91,13 @@ class SegTree(
 		else{
 			// 一部分への書き込み
 			divide();
-			left.setValue(a, b, v);
-			right.setValue(a, b, v);
+			int wleft = left.getWidth(a, b), wright = right.getWidth(a, b);
+			if(wleft > 0 && wright > 0){
+				left.setValue(a, left.b, projectleft(v, wleft, wright));
+				right.setValue(right.a, b, projectright(v, wleft, wright));
+			}
+			else if(wleft > 0) left.setValue(a, b, v);
+			else if(wright > 0) right.setValue(a, b, v);
 			result = merge(left.getResult(), left.width, right.getResult(), right.width);
 		}
 	}
@@ -90,8 +105,8 @@ class SegTree(
 	// 値を下へおろす (内部用)
 	void divide(){
 		if(hasValue){
-			left.setValue(value);
-			right.setValue(value);
+			left.setValue(projectleft(value, left.width, right.width));
+			right.setValue(projectright(value, left.width, right.width));
 			hasValue = 0;
 			result = merge(left.getResult(), left.width, right.getResult(), right.width);
 		}
@@ -113,7 +128,7 @@ class SegTree(
 			if(wleft > 0 && wright > 0) return merge(left.getResult(a, b), wleft, right.getResult(a, b), wright);
 			else if(wleft > 0) return left.getResult(a, b);
 			else if(wright > 0) return right.getResult(a, b);
-            assert(0);
+			assert(0);
 		}
 	}
 
