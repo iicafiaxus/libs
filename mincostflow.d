@@ -1,50 +1,75 @@
 /*
     最小費用流
+    使い方
+
+    初期化
+        auto costflow = new CostFlow(n);
+            // n 個の頂点 (SとTは別途用意される)
+    
+    辺を作る
+        costflow.connect(i, j, capacity, cost); 
+            // 頂点 i から頂点 j へ、容量 capacity でコスト単価 cost の辺を作る
+            // cost は 0 以上とすること
+    
+    湧き出し頂点を作る
+        costflow.setSource(i, capacity, cost);
+            // 頂点 i を容量 capacity でコスト単価 cost の湧き出し頂点とする
+            // (= S から頂点 i への辺を作る)
+    
+    吸い込み頂点を作る
+        costflow.setSink(i, capacity, cost);
+            // 頂点 i を容量 capacity でコスト単価 cost の吸い込み頂点とする
+            // (= 頂点 i から T への辺を作る)
+
+    結果を求める
+        auto ans = costflow.getResult(flow);
+            // (long) ans.value　流量 flow を流すときの最小のコスト
+            // (bool) ans.isError　流量 flow を流しきれなかったとき真
+            // ※ 流しきれなかったときは ans.value の値は不定
 
 */
 class CostFlow{
     int n;
-    Node[] nodes;
-    Edge[] edges;
+    Node[] nodes, allNodes;
+    Edge[] edges, allEdges;
+    Node source, sink;
     this(int n){
         this.n = n;
         foreach(i; 0 .. n) new Node;
+        source = new Node, sink = new Node;
     }
     void connect(int i, int j, long v, long c){
-        Edge edge = new Edge(i, j, v, c);
-        Edge inv = new Edge(j, i, 0, -c, 1);
-        edge.inv = inv, inv.inv = edge;
-        nodes[i].edges ~= edge;
-        nodes[j].edges ~= inv;
+        new Edge(i, j, v, c);
+    }
+    void setSource(int j, long v, long c){
+        new Edge(source.id, j, v, c);
+    }
+    void setSink(int i, long v, long c){
+        new Edge(i, sink.id, v, c);
     }
     struct Result{ long value; bool isError; }
-    Result getResult(int i, int j, long k){
-        Node source = nodes[i], target = nodes[j];
+    Result getResult(long k){
         long cost;
         long maxcost;
         foreach(ed; edges) maxcost += max(ed.cost, 0);
-        log(this);
         while(k > 0){
-            foreach(nd; nodes) nd.parentEdge = null, nd.value = k, nd.cost = maxcost + 1, nd.isVisited = 0;
+            foreach(nd; nodes) nd.parentEdge = null, nd.value = k, nd.cost = maxcost + 1;
             source.cost = 0;
-            long f = getBest(source, target, k);
+            long f = getBest(k);
             if(f == 0) return Result(0, 1);
-            for(Node nd = target; nd.id != source.id; nd = nd.parentEdge.node0){
+            for(Node nd = sink; nd.id != source.id; nd = nd.parentEdge.node0){
                 nd.parentEdge.value -= f;
                 nd.parentEdge.inv.value += f;
                 cost += nd.parentEdge.cost * f;
             }
             k -= f;
-            log("flow this time:", f, "flow left:", k, "cost:", cost);
-            log(this);
-            if(f == 0) return Result(0, 1);
         }
         return Result(cost, 0);
     }
-    long getBest(Node src, Node tar, long value){
+    long getBest(long value){
         struct S{ int id; long value; }
         auto ndh = new RedBlackTree!(S, "a.value < b.value", true);
-        ndh.insert(S(src.id, src.cost));
+        ndh.insert(S(source.id, source.cost));
         while( ! ndh.empty){
             Node nd = nodes[ndh.front.id];
             ndh.removeFront;
@@ -52,7 +77,6 @@ class CostFlow{
                 if(ed.value > 0){
                     Node nd1 = ed.node1;
                     if(nd1.cost > nd.cost + ed.cost){
-                        log("nd:", nd, "nd1:", nd1, "ed:", ed, "cost:", nd.cost + ed.cost);
                         nd1.cost = nd.cost + ed.cost;
                         nd1.parentEdge = ed;
                         nd1.value = min(nd.value, ed.value);
@@ -61,7 +85,7 @@ class CostFlow{
                 }
             }
         }
-        if(tar.parentEdge) return tar.value;
+        if(sink.parentEdge) return sink.value;
         else return 0;
     }
 
@@ -81,17 +105,21 @@ class CostFlow{
     }
     class Edge{
         Edge inv;
-        bool isInv;
         Node node0, node1;
         long value;
         long cost;
         this(int i, int j, long v, long c, bool isInv = 0){
-            this.node0 = nodes[i];
-            this.node1 = nodes[j];
-            this.value = v;
-            this.cost = c;
-            this.isInv = isInv;
-            edges ~= this;
+            this.node0 = nodes[i], this.node1 = nodes[j];
+            this.value = v, this.cost = c;
+            allEdges ~= this;
+
+            if(! isInv){
+                this.inv = new Edge(j, i, 0, -c, 1);
+                this.inv.inv = this;
+                edges ~= this;
+                node0.edges ~= this;
+                node1.edges ~= this.inv;
+            }
         }
         override string toString(){
             return node0.id.to!string ~ "-" ~ node1.id.to!string
@@ -102,6 +130,6 @@ class CostFlow{
 
     override string toString(){
         return "Nodes: " ~ nodes.map!(nd => nd.toString).array.join(" ")
-            ~ "\n" ~ "Edges: " ~ edges.filter!(ed => ! ed.isInv).map!(ed => ed.toString).array.join(" ");
+            ~ "\n" ~ "Edges: " ~ edges.map!(ed => ed.toString).array.join(" ");
     }
 }
