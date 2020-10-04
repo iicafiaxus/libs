@@ -8,36 +8,36 @@
 使い方
 
 準備
-    auto seg = new SegTree!(
-        long, long,
-            // 与える値の型と、計算結果の型
-        delegate (long x, long v) => x + v,
-            // 計算結果が x である区間に値 v を与えたら、この区間の計算結果はどうなるか
-        delegate (long x, long y) => x + y,
-            // 計算結果が x である区間と y である区間をつなげたら、計算結果はどうなるか
-        0
-            // 計算結果の初期値 (起動直後に1点を読み出すとこの値が出てくる)
-    )(a, b);
-        // 添字の範囲。 この意味は a 以上 b - 1 以下ということ
+	auto seg = new SegTree!(
+		long, long,
+			// 与える値の型と、計算結果の型
+		delegate (long x, long v) => x + v,
+			// 計算結果が x である区間に値 v を与えたら、この区間の計算結果はどうなるか
+		delegate (long x, long y) => x + y,
+			// 計算結果が x である区間と y である区間をつなげたら、計算結果はどうなるか
+		0
+			// 計算結果の初期値 (起動直後に1点を読み出すとこの値が出てくる)
+	)(a, b);
+		// 添字の範囲。 この意味は a 以上 b - 1 以下ということ
     
 書き込み
-    seg.setValue(i, x);
-        // 添字 i の位置に値 x を与える
+	seg.setValue(i, x);
+		// 添字 i の位置に値 x を与える
 
 読み出し
-    long ans = seg.getValue(a, b)
-        // a 以上 b - 1 以下の部分についての計算結果
+	long ans = seg.getValue(a, b)
+        	// a 以上 b - 1 以下の部分についての計算結果
 
 テストコード
-    AOJ DSL_2_B
-    https://paiza.io/projects/e/DiEmVCszplumS4a_BntLRQ
+	AOJ DSL_2_B
+	https://paiza.io/projects/e/DiEmVCszplumS4a_BntLRQ
 
 */
 class SegTree(
-    U, T, 
-    T delegate(T, U) apply,
-    T delegate(T, T) merge,
-    T initial
+	U, T, 
+	T delegate(T, U) apply,
+	T delegate(T, T) merge,
+	T initial
 ){
 	int a, b; // a <= x < b を担当する
 	SegTree left, right; // 左の子(a <= x < c)、右の子(c <= x < b)
@@ -60,7 +60,7 @@ class SegTree(
 	
 	// [a, b) における計算結果を読む
 	// ※[a, b) はこのノードの担当区間とかぶっていなければならない
-    T getResult(){ return getResult(a, b); }
+	T getResult(){ return getResult(a, b); }
 	T getResult(int a, int b){
 		assert(this.a < b && a < this.b);
 		if(a <= this.a && this.b <= b){
