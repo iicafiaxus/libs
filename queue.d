@@ -16,12 +16,18 @@ class Queue(T){
 	this(T[] xs){ this.xs = xs; j = xs.length.to!uint; }
 	uint length(){ return j - i; }
 	bool isEmpty(){ return j == i; }
+	alias empty = isEmpty;
 	void enq(T x){
 		while(j + 1 >= xs.length) xs.length = xs.length * 2 + 1;
 		xs[j ++] = x;
 	}
 	T deq(){ assert(i < j); return xs[i ++]; }
 	T peek(){ assert(i < j); return xs[i]; }
+	alias pop = deq, push = enq, top = peek;
+	Queue opOpAssign(string op)(T x){
+		if(op == "~"){ enq(x); return this; }
+		assert(0, "Operator " ~ op ~ "= not implemented");
+	}
 	T opIndex(uint li){ assert(i + li < j); return xs[i + li]; }
 	static Queue!T opCall(){ return new Queue!T; }
 	static Queue!T opCall(T[] xs){ return new Queue!T(xs); }
