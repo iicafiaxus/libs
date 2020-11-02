@@ -4,14 +4,14 @@ import std.conv;
 ※優先度付きキューは Phobos の RedBlackTree を使えばよい
 new RedBlackTree!(long, "a<b", true);
 "a<b"は小さい要素を優先して取り出すという意味。
-trueは同一の値が複数個入ってもよいという意味。
+trueは、優先度の等しい値が複数個入ってもよいという意味。
 */
 
 import std.conv;
 // ----- キュー -----
 class Queue(T){
 	private T[] xs;
-	private uint i, j; // i : 次に読み出す位置　j: 次に書き込む位置
+	private uint i, j;
 	this(){	}
 	this(T[] xs){ this.xs = xs; j = xs.length.to!uint; }
 	uint length(){ return j - i; }
@@ -37,7 +37,7 @@ class Queue(T){
 // ----- スタック -----
 class Stack(T){
 	private T[] xs;
-	private uint j; // j : 次に書き込む位置
+	private uint j;
 	this(){	}
 	this(T[] xs){ this.xs = xs; j = xs.length.to!uint; }
 	uint length(){ return j; }
@@ -52,6 +52,7 @@ class Stack(T){
 	}
 	T pop(){ assert(j > 0); return xs[-- j]; }
 	T peek(){ assert(j > 0); return xs[j - 1]; }
+    alias empty = isEmpty, top = peek;
 	T opIndex(uint li){ assert(j > 0 && j - 1 >= li); return xs[j - 1 - li]; }
 	static Stack!T opCall(){ return new Stack!T; }
 	static Stack!T opCall(T[] xs){ return new Stack!T(xs); }
