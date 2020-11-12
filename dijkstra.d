@@ -38,7 +38,7 @@ class Dijkstra{
     void makeArrow(int i, int j, long value){
         // assert(i >= 0 && i < n && j >= 0 && j < n);
         if(i == j) return;
-        cost[i][j] = value;
+        if(j !in cost[i] || cost[i][j] > value) cost[i][j] = value;
         hasResult = 0;
     }
     void makeArrow(int i, int j){
