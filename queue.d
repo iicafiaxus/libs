@@ -52,7 +52,8 @@ class Stack(T){
 	}
 	T pop(){ assert(j > 0); return xs[-- j]; }
 	T peek(){ assert(j > 0); return xs[j - 1]; }
-    alias empty = isEmpty, top = peek;
+	void clear(){ j = 0; }
+	alias empty = isEmpty, top = peek;
 	T opIndex(uint li){ assert(j > 0 && j - 1 >= li); return xs[j - 1 - li]; }
 	static Stack!T opCall(){ return new Stack!T; }
 	static Stack!T opCall(T[] xs){ return new Stack!T(xs); }
