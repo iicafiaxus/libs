@@ -83,13 +83,15 @@ class Dijkstra{
 /*
 ------------------------------------------------------------
     ダイクストラ法
-    (辺の重みがすべて 1 である場合)
-
+    (辺の重みがすべて 0 か 1 である場合)
     使い方
     auto dij = new Dijkstra(n);
         // 頂点数 n
     dij.makeArrow(i, j);
         // 頂点 i から頂点 j へコスト 1 の辺を張る
+        // (頂点の番号は 0 始まり)
+    dij.makeZeroArrow(i, j);
+        // 頂点 i から頂点 j へコスト 0 の辺を張る
         // (頂点の番号は 0 始まり)
     dij.root = s;
         // 頂点 s をスタート地点とする
@@ -102,19 +104,27 @@ class Dijkstra{
 */ 
 class Dijkstra{
     int n;
-    long[int][] cost;
+    int[][] zeronodes;
+    int[][] onenodes;
     long[] result;
     int _root;
     bool hasResult;
     this(int n){
         this.n = n;
-        cost = new long[int][](n);
+        onenodes = new int[][](n);
+        zeronodes = new int[][](n);
         result = new long[](n);
     }
     void makeArrow(int i, int j){
         // assert(i >= 0 && i < n && j >= 0 && j < n);
         if(i == j) return;
-        cost[i][j] = 1;
+        onenodes[i] ~= j;
+        hasResult = 0;
+    }
+    void makeZeroArrow(int i, int j){
+        // assert(i >= 0 && i < n && j >= 0 && j < n);
+        if(i == j) return;
+        zeronodes[i] ~= j;
         hasResult = 0;
     }
     int root(int r){
@@ -134,17 +144,21 @@ class Dijkstra{
     struct X{ int id; long value; }
     void calc(){
         foreach(i; 0 .. n) result[i] = -1;
-        auto uq = new Queue!X;
+        auto zeroq = new Queue!X, uq = new Queue!X;
         uq ~= X(root, 0);
-        while( ! uq.isEmpty){
-            auto u = uq.pop;
+        while( ! zeroq.isEmpty || ! uq.isEmpty){
+            auto u = zeroq.isEmpty ? uq.pop : zeroq.pop;
             int i = u.id;
             log("root:", root, "i:", i, "v:", u.value);
             if(result[i] >= 0) continue;
             result[i] = u.value;
-            foreach(j, c; cost[i]){
+            foreach(j; zeronodes[i]){
                 if(result[j] >= 0) continue;
-                uq ~= X(j, result[i] + cost[i][j]);
+                zeroq ~= X(j, result[i]);
+            }
+            foreach(j; onenodes[i]){
+                if(result[j] >= 0) continue;
+                uq ~= X(j, result[i] + 1);
             }
         }
         hasResult = 1;
