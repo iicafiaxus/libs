@@ -1,10 +1,8 @@
 /*
     テスト用のグラフを作成
-
     使い方
     auto ps = generatedEdges(n, n * n, 80, 80, 100, 0, true, false, false);
     foreach(p; ps) print(p.u + 1, p.v + 1);
-
 */
 struct GeneratorEdge{ int u, v; }
 GeneratorEdge[] generatedEdges(
@@ -16,13 +14,14 @@ GeneratorEdge[] generatedEdges(
     int r4, // 辺数の上限に達した後、辺追加を続行する確率(%)
     bool allowInverted, // 逆向きの辺（u > v）を許可する
     bool allowMultiple, // 多重辺を許可する
-    bool allowSelfLoop, // 自己ループを許可する
+    bool allowSelfLoop // 自己ループを許可する
+){
 
     GeneratorEdge[] res;
 
     auto uf = new UnionFind(n);
     bool[int[2]] cnt;
-    while(uniform(0, 100) >= r3){
+    while(uniform(0, 100) <= r3){
         int u = uniform(0, n);
         int v = uniform(0, n);
         if( ! allowInverted && u > v) swap(u, v);
