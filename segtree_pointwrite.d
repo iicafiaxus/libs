@@ -83,7 +83,7 @@ class SegTree(
 	}
 
 	// i に値を設定
-	void setValue(int i, T value){
+	void setValue(int i, U value){
 		assert(a <= i && i < b);
 		if(isTerminal){
 		    result = apply(result, value);
