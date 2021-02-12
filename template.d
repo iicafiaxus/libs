@@ -8,7 +8,8 @@ void print(T, A ...)(T t, A a){ std.stdio.write(t, " "), print(a); }
 string unsplit(T)(T xs){ return xs.array.to!(string[]).join(" "); }
 string scan(){ static string[] ss; while(!ss.length) ss = readln.chomp.split; string res = ss[0]; ss.popFront; return res; }
 T scan(T)(){ return scan.to!T; } T[] scan(T)(int n){ return n.iota.map!(i => scan!T()).array; }
-T lowerTo(T)(ref T x, T y){ if(x > y) x = y; return x; } T raiseTo(T)(ref T x, T y){ if(x < y) x = y; return x; }
+T mini(T)(ref T x, T y){ if(x > y) x = y; return x; } T maxi(T)(ref T x, T y){ if(x < y) x = y; return x; }
+T mid(T)(T l, T r, bool delegate(T) f){ T m=(l+r)/2; (f(m)?l:r)=m; return f(l)?f(r-1)?r:mid(l,r,f):l; }
 
 // ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- //
 void gen(){ // テストケース
