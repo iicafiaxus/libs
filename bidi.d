@@ -1,11 +1,23 @@
-// 双方向木DP (簡易版)
-// 下り方向も上り方向と同じ計算方法でOKなタイプ
+
+// 双方向木DP (正式版)
+// 上り方向と下り方向を別々の方法で計算する
+// ※下り方向が総和からの引き算でできるタイプしかテストされてない
+// （両側からの累積和で添字を使うタイプは未チェック）
 class BidiTree(
     T, // 辺のもつデータ型
-    T delegate (T[] vs) calcNaive,
-        // 1つ以外全ての入り辺のデータから1つの出辺のデータを計算する
-        // （inedges には求める出辺の逆辺のデータは含まれていない）
-    T initial
+	U, // 頂点のもつデータ型
+    T delegate(T[]) calcNaive,
+        // 1つ以外全ての入り辺のデータから1つの出辺のデータを計算する（上り用）
+        // （T[] には求める出辺の逆辺のデータは含まれていないものとする）
+		// O(k)
+	U delegate(T[]) calcNode,
+		// 全ての入り辺のデータから頂点のデータを計算する（下り用）
+		// O(k)
+	T delegate(int, T, U) calcEdge,
+		// 頂点のデータから、k番目の出辺のデータを計算する（下り用）
+		// O(1) 
+    T initialEdge,
+	T initialNode
 ){
     int n;
     Node[] nodes;
@@ -18,18 +30,29 @@ class BidiTree(
         new Edge(a, b);
     }
     void calc(){
-        nodes[0].calc;
+		foreach(ed; nodes[0].inedges) ed.calcUp;
+		nodes[0].calcDown;
     }
     class Node{
+		U value;
         int id;
         Edge[] inedges, edges;
         this(){
             id = nodes.length.to!int;
             nodes ~= this;
+			value = initialNode;
         }
-        void calc(){
-            foreach(ed; inedges) ed.calcUp;
-            foreach(ed; edges) ed.calcDown;
+        void calcDown(){
+            log(this, "calcDown");
+            T[] vs;
+            foreach(ed; inedges) vs ~= ed.value;
+            value = calcNode(vs);
+			log(this, "value:", value);
+            foreach(k, ed; inedges) if( ! ed.inv.hasValue){
+				ed.inv.value = calcEdge(k.to!int, ed.value, value), ed.inv.hasValue = 1;
+				ed.inv.calcDown();
+			}
+			log("calcDown", this);
         }
         override string toString(){
             return id.to!string;
@@ -37,6 +60,7 @@ class BidiTree(
     }
     class Edge{
         T value;
+		bool hasValue;
         int id;
         Edge inv;
         bool isInv;
@@ -47,7 +71,7 @@ class BidiTree(
             id = edges.length.to!int;
             edges ~= this;
             this.isInv = isInv;
-            value = initial;
+            value = initialEdge;
 
             if(isInv) return;
             Edge inv = new Edge(b, a, 1);
@@ -59,19 +83,13 @@ class BidiTree(
             auto inedges = node0.inedges.filter!(ed => ed.inv.id != id);
             T[] vs;
             foreach(ed; inedges) vs ~= ed.calcUp();
-            value = calcNaive(vs);
+            value = calcNaive(vs), hasValue = 1;
             log("calcUp", this);
             return value;
         }
         void calcDown(){
             log(this, "calcDown");
-            // 簡易版
-            auto inedges = node0.inedges.filter!(ed => ed.inv.id != id);
-            T[] vs;
-            foreach(ed; inedges) vs ~= ed.value;
-            value = calcNaive(vs);
-            auto edges = node1.edges.filter!(ed => ed.inv.id != id);
-            foreach(ed; edges) ed.calcDown;
+			node1.calcDown;
             log("calcDown", this);
         }
         override string toString(){
