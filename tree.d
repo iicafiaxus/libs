@@ -2,7 +2,6 @@
 木
 今は根からの深さを求めるしかできないが追い追い整備する
 lca.d にも関係する機能が入っているのでいずれ合流するかも
-
 使用例
     int n = scan!int;
     auto graph = new Graph(n);
@@ -13,12 +12,10 @@ lca.d にも関係する機能が入っているのでいずれ合流するか�
     graph.root = 0;
     graph.setDepth;
     foreach(nd; graph.nodes) nd.depth.print;
-
 思想として、全部入りにするので、必要な機能を明示的に呼ぶ
 (rootを定めただけで自動的にsetDepthが行われたりはしない)
 (明示的ではなくても、例えばdepthにアクセスしようとしたとき
 まだsetDepthしてなかったら呼ばれるとかでもよいかも)
-
 */
 class Graph{
     int n;
@@ -30,8 +27,8 @@ class Graph{
         this.n = n;
         foreach(i; 0 .. n) nodes ~= new Node(i);
     }
-    void connect(int i, int j){
-        edges ~= new Edge(nodes[i], nodes[j]);
+    void connect(int i, int j, long v = 0){
+        edges ~= new Edge(nodes[i], nodes[j], v);
     }
     Node root(){
         return _root;
@@ -53,11 +50,13 @@ class Graph{
 class Node{
     int id;
     int depth;
+	long value;
     bool hasDepth;
     Edge[] edges;
     Node[] nodes;
-    this(int id){
+    this(int id, long value = 0){
         this.id = id;
+        this.value = value;
     }
     void setDepth(int d){
         depth = d;
@@ -69,9 +68,12 @@ class Node{
 }
 class Edge{
     Node node0, node1;
-    this(Node node0, Node node1){
+	long value;
+    this(Node node0, Node node1, long value = 0){
         this.node0 = node0, this.node1 = node1;
+		this.value = value;
         node0.nodes ~= node1, node1.nodes ~= node0;
+		node0.edges ~= this, node1.edges ~= this;
             // 重複辺や自己ループは考慮していない
     }
 }
