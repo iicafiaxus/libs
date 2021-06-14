@@ -184,6 +184,16 @@ FactorResult[] factorized(long n){
 }
 
 
+// modintでの逆元
+// inv(i) は i * v % p = 1 をみたす最小の非負整数 v
+long inv(long x){
+	static long[] memo = [0, 1];
+	while(memo.length <= x) memo ~= memo[p % $] * (p - p / memo.length) % p;
+	return memo[x];
+}
+
+
+
 // n を b 進法で表したときの桁和
 long digitSum(long n, long b){
 	assert(b >= 2);
