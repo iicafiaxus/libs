@@ -163,6 +163,25 @@ long[] factors(long n){
   return ds;
 }
 
+// 素因数分解（同じ素因数の積はまとめ、重複度を添えて返す）
+// 都度 O(√n)
+// 例: 300 -> [FactorResult(2, 2), FactorResult(3, 1), FactorResult(5, 2)]
+struct FactorResult{ long d; long cnt; }
+FactorResult[] factorized(long n){
+	long u = n;
+	FactorResult[] rs;
+	for(long p = 2; p * p <= n; p ++){
+		if(u % p) continue;
+		long cnt = 0;
+		while(u % p == 0){
+			cnt += 1;
+			u /= p;
+		}
+		rs ~= FactorResult(p, cnt);
+	}
+	if(u > 1) rs ~= FactorResult(u, 1);
+	return rs;
+}
 
 
 // n を b 進法で表したときの桁和
