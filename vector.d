@@ -1,4 +1,3 @@
-import std.conv, std.math;
 struct Vector{
     long x, y;
     Argument arg;
@@ -34,6 +33,7 @@ struct Vector{
 
     int quadrant(){ return arg.quadrant; }
     bool isLeftTo(Vector v){ return arg.isLeftTo(v.arg); }
+    bool isLeftOrParallelTo(Vector v){ return arg.isLeftOrParallelTo(v.arg); }
     bool follows(Vector v){ return arg.follows(v.arg); }
     real angle(){ return arg.angle; }
     string toString(){ return "(" ~ x.to!string ~ ", " ~ y.to!string ~ ")"; }
@@ -72,6 +72,11 @@ struct Argument{
     // a から見て this は左側である（aと平行は含まない）
     bool isLeftTo(Argument a){
         return y * a.x - x * a.y > 0;
+    }
+
+    // a から見て this は左側か平行である
+    bool isLeftOrParallelTo(Argument a){
+        return y * a.x - x * a.y >= 0;
     }
 
     // (1, 0) から反時計回りに見て this < a である
