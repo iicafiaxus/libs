@@ -65,6 +65,7 @@ struct Finite{
 /// 例 power(5, 3) = Finite(125)
 /// オーダーは a ** b を計算する場合 O(log b)
 Finite power(long a, long b){
+    if(a == 0) return 0;
     long ans = 1;
     while(b > 0){
         if(b % 2) ans *= a, ans %= mod;
