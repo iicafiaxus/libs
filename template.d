@@ -63,7 +63,7 @@ class Queue(T){
 	alias empty = isEmpty, front = peek, popFront = deq, pop = deq, push = enq, top = peek;
 	Queue opOpAssign(string op)(T x) if(op == "~"){ enq(x); return this; }
 	T opIndex(uint li){ assert(i + li < j); return xs[i + li]; }
-	static Queue!T opCall(T[] xs){ return new Queue!T(xs); }
+	static Queue!T opCall(T[] xs = []){ return new Queue!T(xs); }
 	T[] array(){ return xs[i .. j]; }
 	override string toString(){ return array.to!string; }
 }
