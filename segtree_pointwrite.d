@@ -25,7 +25,7 @@
 		// 添字 i の位置に値 x を与える
 
 読み出し
-	long ans = seg.getValue(a, b)
+	long ans = seg.getResult(a, b)
         	// a 以上 b - 1 以下の部分についての計算結果
 
 テストコード
