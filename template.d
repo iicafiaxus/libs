@@ -37,6 +37,7 @@ T mid(T)(T l, T r, bool delegate(T) f){
 	if( ! f(l)) return l; if(f(r - 1)) return r;
 	T m; while(l < r - 1) m = (l + r) / 2, (f(m)? l: r) = m; return r;
 }
+T[] sums(T)(T[] as){ T[] s = [0]; foreach(a; as) s ~= s[$ - 1] + a; return s; }
 
 // ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- ----- //
 // ライブラリ（基本）
