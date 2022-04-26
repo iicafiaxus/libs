@@ -41,6 +41,10 @@ class Dijkstra{
 		if(j !in cost[i] || cost[i][j] > value) cost[i][j] = value;
 		hasResult = 0;
 	}
+	void connect(int i, int j, long value){
+		makeArrow(i, j, value);
+		makeArrow(j, i, value);
+	}
 	int root(int r){
 		// assert(r >= 0 && r < n);
 		_root = r;
