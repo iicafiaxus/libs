@@ -150,7 +150,6 @@ class Dijkstra{
 		while( ! zeroq.isEmpty || ! uq.isEmpty){
 			auto u = zeroq.isEmpty ? uq.pop : zeroq.pop;
 			int i = u.id;
-			log("root:", root, "i:", i, "v:", u.value);
 			if(result[i] >= 0) continue;
 			result[i] = u.value;
 			foreach(j; zeronodes[i]){
